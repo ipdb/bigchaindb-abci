@@ -17,7 +17,7 @@ Installation
 ------------
 Requires Python >= 3.6.5
 
-``pip install abci``  OR ``python setup.py install``
+``pip --user install bigchaindb-abci``  OR ``python setup.py install``
 
 Generating Protobuf
 -------------------
