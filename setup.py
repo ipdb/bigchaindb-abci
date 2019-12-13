@@ -11,8 +11,8 @@ with open(path.join(DIR, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='abci',
-    version='0.7.0',
+    name='bigchaindb-abci',
+    version='1.0.0',
     description='Python based ABCI Server for Tendermint',
     long_description=long_description,
     url='https://github.com/davebryson/py-abci',

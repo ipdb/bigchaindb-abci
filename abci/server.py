@@ -20,21 +20,6 @@ from .encoding import read_messages, write_message
 from .utils import get_logger
 from .application import BaseApplication
 
-from github.com.tendermint.tendermint.abci.types.types_pb2 import (
-    Request, Response, ResponseException,
-    RequestEcho, ResponseEcho,
-    RequestFlush, ResponseFlush,
-    RequestInitChain, ResponseInitChain,
-    RequestInfo, ResponseInfo,
-    RequestSetOption, ResponseSetOption,
-    ResponseDeliverTx,
-    ResponseCheckTx,
-    RequestQuery, ResponseQuery,
-    RequestBeginBlock, ResponseBeginBlock,
-    RequestEndBlock, ResponseEndBlock,
-    ResponseCommit,
-)
-
 log = get_logger()
 
 
@@ -51,61 +36,63 @@ class ProtocolHandler:
 
     def echo(self, req):
         msg = req.echo.message
-        response = Response(echo=ResponseEcho(message=msg))
+        response = self.app.abci.Response(
+            echo=self.app.abci.ResponseEcho(message=msg))
         return write_message(response)
 
     def flush(self, req):
-        response = Response(flush=ResponseFlush())
+        response = self.app.abci.Response(flush=self.app.abci.ResponseFlush())
         return write_message(response)
 
     def info(self, req):
         result = self.app.info(req.info)
-        response = Response(info=result)
+        response = self.app.abci.Response(info=result)
         return write_message(response)
 
     def set_option(self, req):
         result = self.app.set_option(req.set_option)
-        response = Response(set_option=result)
+        response = self.app.abci.Response(set_option=result)
         return write_message(response)
 
     def check_tx(self, req):
         result = self.app.check_tx(req.check_tx.tx)
-        response = Response(check_tx=result)
+        response = self.app.abci.Response(check_tx=result)
         return write_message(response)
 
     def deliver_tx(self, req):
         result = self.app.deliver_tx(req.deliver_tx.tx)
-        response = Response(deliver_tx=result)
+        response = self.app.abci.Response(deliver_tx=result)
         return write_message(response)
 
     def query(self, req):
         result = self.app.query(req.query)
-        response = Response(query=result)
+        response = self.app.abci.Response(query=result)
         return write_message(response)
 
     def commit(self, req):
         result = self.app.commit()
-        response = Response(commit=result)
+        response = self.app.abci.Response(commit=result)
         return write_message(response)
 
     def begin_block(self, req):
         result = self.app.begin_block(req.begin_block)
-        response = Response(begin_block=result)
+        response = self.app.abci.Response(begin_block=result)
         return write_message(response)
 
     def end_block(self, req):
         result = self.app.end_block(req.end_block)
-        response = Response(end_block=result)
+        response = self.app.abci.Response(end_block=result)
         return write_message(response)
 
     def init_chain(self, req):
         result = self.app.init_chain(req.init_chain)
-        response = Response(init_chain=result)
+        response = self.app.abci.Response(init_chain=result)
         return write_message(response)
 
     def no_match(self, req):
-        response = Response(exception=ResponseException(
-            error="ABCI request not found"))
+        response = self.app.abci.Response(
+            exception=self.app.abci.ResponseException(
+                error="ABCI request not found"))
         return write_message(response)
 
 
@@ -116,6 +103,7 @@ class ABCIServer:
                 "Application missing or not an instance of Base Application")
             raise TypeError(
                 "Application missing or not an instance of Base Application")
+        self.app = app
         self.port = port
         self.protocol = ProtocolHandler(app)
         self.server = StreamServer(
@@ -169,7 +157,7 @@ class ABCIServer:
             # Before reading the messages from the buffer, position the
             # cursor at the end of the last read message.
             data.seek(last_pos)
-            messages = read_messages(data, Request)
+            messages = read_messages(data, self.app.abci.Request)
 
             for message in messages:
                 req_type = message.WhichOneof('value')
