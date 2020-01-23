@@ -23,6 +23,7 @@ else:
     protoc = find_executable("protoc")
 
 
+# def generate_proto(source, version, require=True):
 def generate_proto(source, require=True):
     """Invokes the Protocol Compiler to generate a _pb2.py from the given
     .proto file.  Does nothing if the output already exists and is newer than
@@ -33,9 +34,9 @@ def generate_proto(source, require=True):
 
     output = source.replace(".proto", "_pb2.py").replace("./protobuf/", "")
 
-    if (not os.path.exists(output) or
-        (os.path.exists(source) and
-         os.path.getmtime(source) > os.path.getmtime(output))):
+    if (not os.path.exists(output)
+        or (os.path.exists(source)
+            and os.path.getmtime(source) > os.path.getmtime(output))):
         print("Generating %s..." % output)
 
         if not os.path.exists(source):
@@ -47,19 +48,32 @@ def generate_proto(source, require=True):
                 "protoc is not installed\n")
             sys.exit(-1)
 
-        protoc_command = [protoc, "-I./protobuf",
-                          "-I.", "--python_out=.", source]
+        protoc_command = [protoc, "-I./protobuf/", "--python_out=.", source]
         if subprocess.call(protoc_command) != 0:
             sys.exit(-1)
 
 
+COMMON = [
+    "github.com/gogo/protobuf/gogoproto/gogo.proto"
+]
+
+GEN_MAP = {
+    # Version to file list mapping
+    'v0_22_8': [
+        'github.com/tendermint/tmlibs/common/types.proto',
+        'types.proto',
+    ],
+    'v0_31_5': [
+        "github.com/tendermint/tendermint/crypto/merkle/merkle.proto",
+        "github.com/tendermint/tendermint/libs/common/types.proto",
+        "github.com/tendermint/tendermint/abci/types/types.proto",
+    ]
+}
+
 if __name__ == '__main__':
     # Build all the protobuf files and put into the 'github' directory
-
-    generate_proto("./protobuf/github.com/gogo/protobuf/gogoproto/gogo.proto")
-    generate_proto(
-        "./protobuf/github.com/tendermint/tendermint/crypto/merkle/merkle.proto")
-    generate_proto(
-        "./protobuf/github.com/tendermint/tendermint/libs/common/types.proto")
-    generate_proto(
-        "./protobuf/github.com/tendermint/tendermint/abci/types/types.proto")
+    for fn in COMMON:
+        generate_proto("./protobuf/abci_pb/{fn}".format(fn=fn))
+    for ver, file_names in GEN_MAP.items():
+        for fn in file_names:
+            generate_proto("./protobuf/abci_pb/{ver}/{fn}".format(ver=ver, fn=fn))

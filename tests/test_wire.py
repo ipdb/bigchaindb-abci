@@ -6,7 +6,7 @@ from abci.encoding import (
 )
 
 
-from github.com.tendermint.tendermint.abci.types.types_pb2 import (
+from abci_pb.v0_31_5.github.com.tendermint.tendermint.abci.types.types_pb2 import (
     Request,
     RequestEcho,
     RequestInfo,
