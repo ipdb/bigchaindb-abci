@@ -1,4 +1,3 @@
-
 test_tm:
 	rm -Rf .test_pyabci
 	tendermint --home .test_pyabci init
@@ -16,7 +15,7 @@ clean:
 # 2. test-pypi
 # 3. update-pypi
 build-dist:
-	python setup.py sdist
+	python3 setup.py sdist
 
 test-pypi:
 	twine upload dist/* --repository testpypi
