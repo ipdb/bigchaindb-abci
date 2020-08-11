@@ -12,7 +12,7 @@ with open(path.join(DIR, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='bigchaindb-abci',
-    version='1.0.4',
+    version='1.0.5',
     description='Python based ABCI Server for Tendermint',
     long_description=long_description,
     url='https://github.com/ipdb/bigchaindb-abci',
@@ -32,6 +32,8 @@ setup(
         "protobuf==3.6.1",
         "gevent==20.6.2",
         "colorlog==4.1.0",
+    ],
+    tests_require=[
         "pytest==5.3.5",
         "pytest-pythonpath==0.7.3",
         "pytest-cov==2.8.1"
