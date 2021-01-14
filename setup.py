@@ -12,7 +12,7 @@ with open(path.join(DIR, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='bigchaindb-abci',
-    version='1.0.5',
+    version='1.0.6',
     description='Python based ABCI Server for Tendermint',
     long_description=long_description,
     url='https://github.com/ipdb/bigchaindb-abci',
@@ -30,7 +30,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     install_requires=[
         "protobuf==3.6.1",
-        "gevent==20.6.2",
+        "gevent==20.9.0",
         "colorlog==4.1.0",
     ],
     tests_require=[
